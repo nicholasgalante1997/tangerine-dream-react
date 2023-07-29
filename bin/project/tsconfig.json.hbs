@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "{{ tsconfig.target }}",
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
+    ],
+    "jsx": "react-jsx",
+    "module": " {{ tsconfig.module }}",
+    "rootDir": ".",
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "paths": {
+      {{#if tsconfig.alias }}
+      "@/*": ["./src/*"]
+      {{/if}}
+    },
+    "resolveJsonModule": true,
+    "declaration": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "include": ["src"{{#if withGql }}, "codegen.ts"{{/if}}],
+  "exclude": ["node_modules"]
+}
