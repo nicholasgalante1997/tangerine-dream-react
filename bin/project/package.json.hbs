@@ -4,17 +4,10 @@
   "main": "build/index.js",
   "license": "MIT",
   "scripts": {
-    "build:pages": "webpack --config build-config/client.webpack.js",
-    "build:server": "webpack --config build-config/server.webpack.js",
-    "copy:global-css-to-index": "cp src/web/styles/global.css build/static/index.css",
-    "copy:global-css": "cp -R src/web/styles/global.css build/static/",
-    "copy:vars-css": "cp -R src/web/styles/vars.css build/static/",
-    "copy:make-pages-css-dir": "mkdir -p build/static/pages/",
-    "copy:make-component-css-dir": "mkdir -p build/static/components/",
-    "copy:components-css": "cp -R src/web/styles/components/*.css build/static/components/",
-    "copy:pages-css": "cp -R src/web/styles/pages/*.css build/static/pages/",
-    "copy:imgs": "cp -R assets/* build/static/", 
-    "copy:assets": "npm-run-all copy:global-css-to-index copy:global-css copy:vars-css copy:make-pages-css-dir copy:make-component-css-dir copy:components-css copy:pages-css copy:imgs",
+    "build:pages": "webpack --config config/client.webpack.js",
+    "build:server": "webpack --config config/server.webpack.js",
+    "build:static": "webpack --config config/ssr.webpack.js"
+    "copy:assets": "node copy-assets.mjs",
     "dev:server": "npm run build:pages && npm run copy:assets && ts-node src/index.ts",
     "dev:client": "webpack serve --config build-config/development.webpack.js",
     "build": "npm-run-all build:pages build:server copy:assets",
@@ -30,9 +23,7 @@
     "test": "jest"
   },
   "dependencies": {
-    {{#if withGql}}
-    "@apollo/client": "^3.7.14",
-    {{/if}}
+    {{#if withGql}}"@apollo/client": "^3.7.14",{{/if}}
     "axios": "^1.3.4",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3"{{#if express}},
@@ -51,10 +42,8 @@
     "@babel/preset-env": "^7.20.2",
     "@babel/preset-react": "^7.18.6",
     "@babel/preset-typescript": "^7.18.6",
-    {{#if withGql}}
-    "@graphql-codegen/cli": "^3.3.1",
-    "@graphql-codegen/client-preset": "^3.0.1",
-    {{/if}}
+    {{#if withGql}}"@graphql-codegen/cli": "^3.3.1",
+    "@graphql-codegen/client-preset": "^3.0.1",{{/if}}
     "@storybook/addon-actions": "^7.0.5",
     "@storybook/addon-essentials": "^7.0.5",
     "@storybook/addon-interactions": "^7.0.5",

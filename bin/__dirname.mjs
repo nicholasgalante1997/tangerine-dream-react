@@ -9,6 +9,6 @@ import path from 'path';
  * @summary gets local ES6 Safe dirname
  * -----------------------------------------------------
  */
-export function getDirname() {
+export function getDirname () {
   return path.dirname(fileURLToPath(import.meta.url));
 }

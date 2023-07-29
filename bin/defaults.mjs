@@ -1,6 +1,18 @@
-const tsconfig_defaults = {
+const tsconfigDefaults = {
   target: 'es6',
   module: 'commonjs',
+  aliasSrc: true
 };
 
-export { tsconfig_defaults };
+const defaults = {
+  tsconfig: tsconfigDefaults,
+  express: false,
+  static: true,
+  zustand: false,
+  reactQuery: false,
+  reactMarkdown: false,
+  gql: false,
+  styledComponents: false
+};
+
+export { defaults };

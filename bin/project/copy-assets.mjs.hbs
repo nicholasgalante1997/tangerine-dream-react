@@ -1,0 +1,19 @@
+#!/usr/bin/env node
+import path from 'path';
+import fs from 'fs';
+
+await (async () => {
+  const pathToAssets = path.resolve(process.cwd(), 'assets');
+  const assetFiles = fs.readdirSync(pathToAssets, { encoding: 'utf-8', recursive: true });
+  for (const asset of assetFiles) {
+    const pathToAsset = path.resolve(pathToAssets, asset);
+    const outputFilePath = path.resolve(process.cwd(), 'build', asset);
+    await new Promise((resolve, reject) => fs.copyFile(pathToAsset, outputFilePath, (err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve();
+      }
+    }))
+  }
+})();
