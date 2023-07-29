@@ -1,5 +1,6 @@
 import { Command } from 'commander';
-
+import { writeFileSync, existsSync, mkdirSync } from 'fs';
+import path from 'path';
 import { tsconfig_defaults } from './defaults.mjs';
 import { loadHbsFileTemplate } from './load-hbs-file.mjs';
 import { logger } from './logger.mjs';
@@ -31,6 +32,12 @@ program
     false
   )
   .option(
+    '--react-query',
+    'adds react-query as a dependency and sets up a sample query hook',
+    false
+  )
+  .option('markdown', 'adds react-markdown and sets up a custom markdown page component', false)
+  .option(
     '--styled-components',
     'bring in styled-components and set up components using styled-components. defaults to false',
     false
@@ -60,6 +67,8 @@ program
     const {
       express,
       static: oStatic,
+      markdown,
+      reactQuery,
       zustand,
       styledComponents,
       gql,
@@ -68,11 +77,31 @@ program
       tsconfigAliasSrc,
     } = options;
     try {
+
+      /** --------------------------------------------
+       * Make output dir
+       ----------------------------------------------- */
+       const standardizeDirName = (str) => str.toLowerCase().replace(/\s/g, '-');
+       const projectPath = path.resolve(process.cwd(), standardizeDirName(name));
+       if (existsSync(projectPath)) {
+        throw new Error(standardizeDirName(name) + ' Already Exists.');
+       }
+       mkdirSync(projectPath);
+       
+      /** ---------------------------------------------
+       * Babel file setup
+       ------------------------------------------------ */
       const babelOptions = { styledComponents };
       const babelFile = loadHbsFileTemplate('.babelrc.hbs', babelOptions);
       if (!Boolean(babelFile)) {
         throw new Error('Issue loading babel template.');
       }
+      const babelFileOutPath = path.resolve(projectPath, '.babelrc');
+      writeFileSync(babelFileOutPath, babelFile, { encoding: 'utf-8' });
+
+      /** ---------------------------------------------
+       * tsconfig.json file setup
+       ------------------------------------------------ */
       const tsconfigOptions = {
         tsconfig: {
           target: tsconfigTarget,
@@ -85,6 +114,42 @@ program
       if (!Boolean(tsconfigFile)) {
         throw new Error('Issue loading tsconfig.json template.');
       }
+      const tsconfigFileOutPath = path.resolve(projectPath, 'tsconfig.json');
+      writeFileSync(tsconfigFileOutPath, tsconfigFile, { encoding: 'utf-8' });
+
+      /** ---------------------------------------------
+       * package.json file setup
+       ------------------------------------------------ */
+      const packageJsonOptions = {
+        appName: name,
+        express,
+        withGql: gql,
+        markdown,
+        reactQuery,
+        zustand,
+        styledComponents,
+      };
+      const packageJson = loadHbsFileTemplate('package.json.hbs', packageJsonOptions);
+      if (!Boolean(packageJson)) {
+        throw new Error('Issue loading package.json template.');
+      }
+      const packageJsonOutFile = path.resolve(projectPath, 'package.json');
+      writeFileSync(packageJsonOutFile, packageJson, { encoding: 'utf-8' });
+
+      /** ---------------------------------------------
+       * jest config file setup
+       ------------------------------------------------ */
+      const jestConfigOptions = { appName: name };
+      const jestConfig = loadHbsFileTemplate('jest.config.js.hbs', jestConfigOptions);
+      if (!Boolean(jestConfig)) {
+        throw new Error('Issue loading jest.config.js template.');
+      }
+
+      logger.info({
+        babelFile,
+        tsconfigFile,
+        packageJson,
+      });
     } catch (e) {
       logger.error(e);
       process.exit(1);
