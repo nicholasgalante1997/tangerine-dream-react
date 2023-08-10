@@ -6,7 +6,7 @@
   "scripts": {
     "build:pages": "webpack --config config/client.webpack.js",
     "build:server": "webpack --config config/server.webpack.js",
-    "build:static": "webpack --config config/ssr.webpack.js"
+    "build:static": "webpack --config config/ssr.webpack.js",
     "copy:assets": "node copy-assets.mjs",
     "dev:server": "npm run build:pages && npm run copy:assets && ts-node src/index.ts",
     "dev:client": "webpack serve --config build-config/development.webpack.js",
@@ -26,7 +26,7 @@
     {{#if withGql}}"@apollo/client": "^3.7.14",{{/if}}
     "axios": "^1.3.4",
     "cors": "^2.8.5",
-    "dotenv": "^16.0.3"{{#if express}},
+    "dotenv": "^16.0.3",
     "express": "^4.18.2"{{/if}}{{#if withGql}},
     "graphql": "^16.6.0"{{/if}},
     "npm-run-all": "^4.1.5",
